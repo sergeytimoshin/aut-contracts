@@ -39,12 +39,17 @@ describe("AutID", function () {
 
       daoTypes.addNewMembershipChecker(sWLegacyMembershipChecker.address);
 
-      const ModuleRegistryFactory = await ethers.getContractFactory("ModuleRegistry");
+      const ModuleRegistryFactory = await ethers.getContractFactory(
+        "ModuleRegistry"
+      );
       const moduleRegistry = await ModuleRegistryFactory.deploy();
 
-      const PluginRegistryFactory = await ethers.getContractFactory("PluginRegistry");
-      pluginRegistry = await PluginRegistryFactory.deploy(moduleRegistry.address);
-
+      const PluginRegistryFactory = await ethers.getContractFactory(
+        "PluginRegistry"
+      );
+      pluginRegistry = await PluginRegistryFactory.deploy(
+        moduleRegistry.address
+      );
     });
     beforeEach(async function () {
       [deployer, daoMember, daoMember2, user1, user2, user3, ...addrs] =
@@ -75,7 +80,7 @@ describe("AutID", function () {
       await dao.addMember(daoMember.address);
       await dao.addMember(daoMember2.address);
     });
-    it("Should fail if arguemnts are incorret", async function () {
+    it("Should fail if arguments are incorrect", async function () {
       await expect(
         autID.mint(tooLongUsername, URL, 3, 8, daoExpander.address)
       ).to.revertedWith("Username must be max 16 characters");
@@ -84,19 +89,19 @@ describe("AutID", function () {
       ).to.revertedWith("Role must be between 1 and 3");
       await expect(
         autID.mint(username, URL, 3, 0, daoExpander.address)
-      ).to.revertedWith("Commitment should be between 1 and 10");
+      ).to.revertedWith("AutID: Commitment should be between 1 and 10");
       await expect(
         autID.mint(username, URL, 3, 11, daoExpander.address)
-      ).to.revertedWith("Commitment should be between 1 and 10");
+      ).to.revertedWith("AutID: Commitment should be between 1 and 10");
 
       await expect(
         autID.mint(username, URL, 3, 8, ethers.constants.AddressZero)
-      ).to.revertedWith("Missing DAO");
+      ).to.revertedWith("AutID: Missing DAO");
     });
     it("Should fail if the signer is not a member of the DAO", async function () {
       await expect(
         autID.connect(user1).mint(username, URL, 3, 5, daoExpander.address)
-      ).to.be.revertedWith("Not a member of this DAO!");
+      ).to.be.revertedWith("AutID: Not a member of this DAO!");
     });
     it("Should mint a AutID if singer is a member of the original DAO", async function () {
       const events = await (
@@ -235,19 +240,19 @@ describe("AutID", function () {
           .mint(username, URL, 3, 5, daoExpander.address)
       ).wait();
     });
-    it("Should fail if arguemnts are incorret", async function () {
+    it("Should fail if arguments are incorrect", async function () {
       await expect(autID.joinDAO(4, 8, daoExpander.address)).to.revertedWith(
         "Role must be between 1 and 3"
       );
       await expect(autID.joinDAO(3, 0, daoExpander.address)).to.revertedWith(
-        "Commitment should be between 1 and 10"
+        "AutID: Commitment should be between 1 and 10"
       );
       await expect(autID.joinDAO(3, 11, daoExpander.address)).to.revertedWith(
-        "Commitment should be between 1 and 10"
+        "AutID: Commitment should be between 1 and 10"
       );
       await expect(
         autID.joinDAO(3, 8, ethers.constants.AddressZero)
-      ).to.revertedWith("Missing DAO");
+      ).to.revertedWith("AutID: Missing DAO");
     });
     it("Should fail if there's no AutID minted for the signer", async function () {
       await expect(
@@ -264,7 +269,7 @@ describe("AutID", function () {
     it("Should fail if the signer is not a member of the DAO", async function () {
       await expect(
         autID.connect(daoMember).joinDAO(3, 5, daoExpander2.address)
-      ).to.be.revertedWith("Not a member of this DAO!");
+      ).to.be.revertedWith("AutID: Not a member of this DAO!");
     });
     it("Should add the new Community to the AutID for original DAO member", async function () {
       await dao.addMember(daoMember2.address);
@@ -312,7 +317,7 @@ describe("AutID", function () {
     it("Should not join one community twice", async function () {
       await expect(
         autID.connect(daoMember).joinDAO(3, 10, daoExpander.address)
-      ).to.be.revertedWith("Already a member");
+      ).to.be.revertedWith("AutID: Already a member");
     });
   });
 
@@ -363,7 +368,6 @@ describe("AutID", function () {
         URL,
         4,
         pluginRegistry.address
-
       );
       await daoExpander.deployed();
       daoExpander2 = await DAOExpander.deploy(
@@ -376,7 +380,6 @@ describe("AutID", function () {
         URL,
         5,
         pluginRegistry.address
-
       );
       await daoExpander2.deployed();
 
@@ -479,7 +482,6 @@ describe("AutID", function () {
         URL,
         10,
         pluginRegistry.address
-
       );
       await daoExpander.deployed();
 

@@ -39,14 +39,19 @@ describe("DAOExpander", function () {
 
       daoTypes.addNewMembershipChecker(sWLegacyMembershipChecker.address);
 
-      const ModuleRegistryFactory = await ethers.getContractFactory("ModuleRegistry");
+      const ModuleRegistryFactory = await ethers.getContractFactory(
+        "ModuleRegistry"
+      );
       const moduleRegistry = await ModuleRegistryFactory.deploy();
-  
-      const PluginRegistryFactory = await ethers.getContractFactory("PluginRegistry");
-      pluginRegistry = await PluginRegistryFactory.deploy(moduleRegistry.address);
 
+      const PluginRegistryFactory = await ethers.getContractFactory(
+        "PluginRegistry"
+      );
+      pluginRegistry = await PluginRegistryFactory.deploy(
+        moduleRegistry.address
+      );
     });
-    it("Should fail if arguemnts are incorret", async function () {
+    it("Should fail if arguments are incorrect", async function () {
       const DAOExpander = await ethers.getContractFactory("DAOExpander");
       await expect(
         DAOExpander.deploy(
@@ -59,7 +64,6 @@ describe("DAOExpander", function () {
           URL,
           10,
           pluginRegistry.address
-
         )
       ).to.be.revertedWith("Missing DAO Types address");
       await expect(
@@ -73,7 +77,6 @@ describe("DAOExpander", function () {
           URL,
           10,
           pluginRegistry.address
-
         )
       ).to.be.revertedWith("Invalid membership type");
       await expect(
@@ -87,7 +90,6 @@ describe("DAOExpander", function () {
           URL,
           10,
           pluginRegistry.address
-
         )
       ).to.be.revertedWith("Missing DAO Address");
       await expect(
@@ -115,7 +117,6 @@ describe("DAOExpander", function () {
           "",
           10,
           pluginRegistry.address
-
         )
       ).to.be.revertedWith("invalid url");
 
@@ -130,7 +131,6 @@ describe("DAOExpander", function () {
           URL,
           0,
           pluginRegistry.address
-
         )
       ).to.be.revertedWith("invalid commitment");
       await expect(
@@ -144,7 +144,6 @@ describe("DAOExpander", function () {
           URL,
           11,
           pluginRegistry.address
-
         )
       ).to.be.revertedWith("invalid commitment");
     });
@@ -160,7 +159,6 @@ describe("DAOExpander", function () {
         URL,
         10,
         pluginRegistry.address
-
       );
 
       await daoExpander.deployed();
@@ -186,7 +184,11 @@ describe("DAOExpander", function () {
       sWLegacyMembershipChecker = await SWLegacyMembershipChecker.deploy();
       await sWLegacyMembershipChecker.deployed();
 
-      await (await daoTypes.addNewMembershipChecker(sWLegacyMembershipChecker.address)).wait();
+      await (
+        await daoTypes.addNewMembershipChecker(
+          sWLegacyMembershipChecker.address
+        )
+      ).wait();
 
       const DAOExpander = await ethers.getContractFactory("DAOExpander");
       daoExpander = await DAOExpander.deploy(
@@ -341,7 +343,11 @@ describe("DAOExpander", function () {
       sWLegacyMembershipChecker = await SWLegacyMembershipChecker.deploy();
       await sWLegacyMembershipChecker.deployed();
 
-      await (await daoTypes.addNewMembershipChecker(sWLegacyMembershipChecker.address)).wait();
+      await (
+        await daoTypes.addNewMembershipChecker(
+          sWLegacyMembershipChecker.address
+        )
+      ).wait();
 
       const DAOExpander = await ethers.getContractFactory("DAOExpander");
       daoExpander = await DAOExpander.deploy(
@@ -367,9 +373,11 @@ describe("DAOExpander", function () {
     });
     it("Should succeed when the owner adds new admin", async () => {
       await (await dao.addMember(admin1.address)).wait();
-      await (await autID
-        .connect(admin1)
-        .mint("username", "URL", 3, 10, daoExpander.address)).wait();
+      await (
+        await autID
+          .connect(admin1)
+          .mint("username", "URL", 3, 10, daoExpander.address)
+      ).wait();
 
       await daoExpander.addAdmin(admin1.address);
       const admins = await daoExpander.getAdmins();
@@ -379,9 +387,11 @@ describe("DAOExpander", function () {
     });
     it("Should succeed when an admin adds new admins to the whitelist", async () => {
       await (await dao.addMember(admin2.address)).wait();
-      await (await autID
-        .connect(admin2)
-        .mint("username1", "URL", 3, 10, daoExpander.address)).wait();
+      await (
+        await autID
+          .connect(admin2)
+          .mint("username1", "URL", 3, 10, daoExpander.address)
+      ).wait();
 
       await daoExpander.connect(admin1).addAdmin(admin2.address);
       const admins = await daoExpander.getAdmins();
@@ -391,7 +401,9 @@ describe("DAOExpander", function () {
       expect(admins[2]).to.eq(admin2.address);
     });
     it("Should remove an admin correctly", async () => {
-      const a = await (await daoExpander.connect(admin2).removeAdmin(admin1.address)).wait();
+      const a = await (
+        await daoExpander.connect(admin2).removeAdmin(admin1.address)
+      ).wait();
       const admins = await daoExpander.getAdmins();
       expect(admins[0]).to.eq(deployer.address);
       expect(admins[1]).to.eq(ethers.constants.AddressZero);

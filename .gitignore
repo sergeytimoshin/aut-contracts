@@ -8,6 +8,9 @@ typechain
 cache
 artifacts
 
+# mac
+.DS_Store
+**/.DS_Store
 
 # OpenZeppelin
 .openzeppelin/dev-*.json

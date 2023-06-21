@@ -11,13 +11,12 @@ let pluginRegistry;
 describe("Nova", function () {
   describe("deployment", function () {
     before(async function () {
-
-      const ModuleRegistryFactory = await ethers.getContractFactory("ModuleRegistry");
-      const moduleRegistry = await ModuleRegistryFactory.deploy();
-  
-      const PluginRegistry = await ethers.getContractFactory(
-        "PluginRegistry"
+      const ModuleRegistryFactory = await ethers.getContractFactory(
+        "ModuleRegistry"
       );
+      const moduleRegistry = await ModuleRegistryFactory.deploy();
+
+      const PluginRegistry = await ethers.getContractFactory("PluginRegistry");
       pluginRegistry = await PluginRegistry.deploy(moduleRegistry.address);
 
       [dep, notAMem, ...addrs] = await ethers.getSigners();
@@ -27,25 +26,60 @@ describe("Nova", function () {
       autID = await AutID.deploy();
       await autID.deployed();
     });
-    it("Should fail if arguemnts are incorret", async function () {
+    it("Should fail if arguments are incorrect", async function () {
       const Nova = await ethers.getContractFactory("Nova");
       await expect(
-        Nova.deploy(deployer.address, autID.address, 7, URL, 10, pluginRegistry.address)
+        Nova.deploy(
+          deployer.address,
+          autID.address,
+          7,
+          URL,
+          10,
+          pluginRegistry.address
+        )
       ).to.be.revertedWith("invalid market");
 
       await expect(
-        Nova.deploy(deployer.address, autID.address, 2, "", 10, pluginRegistry.address)
+        Nova.deploy(
+          deployer.address,
+          autID.address,
+          2,
+          "",
+          10,
+          pluginRegistry.address
+        )
       ).to.be.revertedWith("invalid url");
 
       await expect(
-        Nova.deploy(deployer.address, autID.address, 2, URL, 0, pluginRegistry.address)
+        Nova.deploy(
+          deployer.address,
+          autID.address,
+          2,
+          URL,
+          0,
+          pluginRegistry.address
+        )
       ).to.be.revertedWith("invalid commitment");
       await expect(
-        Nova.deploy(deployer.address, autID.address, 2, URL, 11, pluginRegistry.address)
+        Nova.deploy(
+          deployer.address,
+          autID.address,
+          2,
+          URL,
+          11,
+          pluginRegistry.address
+        )
       ).to.be.revertedWith("invalid commitment");
 
       await expect(
-        Nova.deploy(deployer.address, autID.address, 2, URL, 7, ethers.constants.AddressZero)
+        Nova.deploy(
+          deployer.address,
+          autID.address,
+          2,
+          URL,
+          7,
+          ethers.constants.AddressZero
+        )
       ).to.be.revertedWith("invalid pluginRegistry");
     });
     it("Should deploy an Nova", async function () {
@@ -66,16 +100,27 @@ describe("Nova", function () {
   });
   describe("Manage URLs", async () => {
     before(async function () {
-      const ModuleRegistryFactory = await ethers.getContractFactory("ModuleRegistry");
+      const ModuleRegistryFactory = await ethers.getContractFactory(
+        "ModuleRegistry"
+      );
       const moduleRegistry = await ModuleRegistryFactory.deploy();
 
       const PluginRegistryFactory = await ethers.getContractFactory(
         "PluginRegistry"
       );
-      pluginRegistry = await PluginRegistryFactory.deploy(moduleRegistry.address);
+      pluginRegistry = await PluginRegistryFactory.deploy(
+        moduleRegistry.address
+      );
 
       const Nova = await ethers.getContractFactory("Nova");
-      nova = await Nova.deploy(deployer.address, autID.address, 1, URL, 10, pluginRegistry.address);
+      nova = await Nova.deploy(
+        deployer.address,
+        autID.address,
+        1,
+        URL,
+        10,
+        pluginRegistry.address
+      );
       await nova.deployed();
     });
     it("Should return false when URL list is empty", async () => {
@@ -164,35 +209,42 @@ describe("Nova", function () {
       deployer = dep;
       admin1 = ad1;
       admin2 = ad2;
-      const ModuleRegistryFactory = await ethers.getContractFactory("ModuleRegistry");
+      const ModuleRegistryFactory = await ethers.getContractFactory(
+        "ModuleRegistry"
+      );
       const moduleRegistry = await ModuleRegistryFactory.deploy();
 
       const PluginRegistryFactory = await ethers.getContractFactory(
         "PluginRegistry"
       );
-      pluginRegistry = await PluginRegistryFactory.deploy(moduleRegistry.address);
+      pluginRegistry = await PluginRegistryFactory.deploy(
+        moduleRegistry.address
+      );
 
       const AutID = await ethers.getContractFactory("AutID");
       autID = await AutID.deploy();
       await autID.deployed();
 
       const Nova = await ethers.getContractFactory("Nova");
-      nova = await Nova.deploy(deployer.address, autID.address, 1, URL, 10, pluginRegistry.address);
+      nova = await Nova.deploy(
+        deployer.address,
+        autID.address,
+        1,
+        URL,
+        10,
+        pluginRegistry.address
+      );
 
       await nova.deployed();
 
       expect(nova.address).to.not.be.null;
     });
     it("Should fail if the owner tries to add someone to the admin list if not a member", async () => {
-      expect(nova.addAdmin(admin1.address)).to.be.revertedWith(
-        "Not a member"
-      );
+      expect(nova.addAdmin(admin1.address)).to.be.revertedWith("Not a member");
     });
     it("Should succeed when the owner adds new admin", async () => {
       await (
-        await autID
-          .connect(admin1)
-          .mint("username", "URL", 3, 10, nova.address)
+        await autID.connect(admin1).mint("username", "URL", 3, 10, nova.address)
       ).wait();
 
       await nova.addAdmin(admin1.address);
@@ -228,15 +280,15 @@ describe("Nova", function () {
     });
     it("Should fail if unlisted core team member attepts to add other core team members", async () => {
       await nova.connect(admin2).removeAdmin(admin1.address);
-      expect(
-        nova.connect(admin1).addAdmin(admin2.address)
-      ).to.be.revertedWith("Only admin!");
+      expect(nova.connect(admin1).addAdmin(admin2.address)).to.be.revertedWith(
+        "Only admin!"
+      );
     });
     it("Should fail if an admin tries to add someone that's not a member to the admins", async () => {
       await nova.connect(admin2).removeAdmin(admin1.address);
-      expect(
-        nova.connect(admin1).addAdmin(admin2.address)
-      ).to.be.revertedWith("Only admin!");
+      expect(nova.connect(admin1).addAdmin(admin2.address)).to.be.revertedWith(
+        "Only admin!"
+      );
     });
   });
 });
